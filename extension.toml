@@ -1,0 +1,12 @@
+id = "zero-live-preview"
+name = "Zero Preview"
+version = "0.1.0"
+schema_version = 1
+authors = ["kuozher"]
+description = "Zero-config, path-resilient live preview for HTML. Single-file instant preview with SSE reload and hot CSS."
+repository = "https://github.com/kuozher/zed-zero-preview"
+
+[language_servers.zero-preview]
+name = "Zero Preview"
+language = "HTML"
+languages = ["HTML"]
