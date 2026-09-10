@@ -1,6 +1,3 @@
-mod lsp;
-mod paths;
-
 fn main() {
-    lsp::run_lsp();
+    zero_preview_server::lsp::run_lsp();
 }

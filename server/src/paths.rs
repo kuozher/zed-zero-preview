@@ -43,6 +43,11 @@ pub fn raw_url_to_fs_path(raw: &str, is_windows: bool) -> PathBuf {
     PathBuf::from(raw_path)
 }
 
+/// Decode a URL path component (e.g. request pathname for referer fallback).
+pub fn decode_path_component(s: &str) -> String {
+    decode_uri_component(s)
+}
+
 /// Convert an LSP `file://` URI into a filesystem path.
 pub fn file_uri_to_path(uri: &str, is_windows: bool) -> PathBuf {
     let rest = uri.strip_prefix("file://").unwrap_or(uri);
