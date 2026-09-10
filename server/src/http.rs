@@ -358,13 +358,28 @@ fn handle_sse(mut stream: TcpStream, query: &str, watch_registry: &WatchRegistry
         PathBuf::new()
     };
 
+    // SSE responses must NOT carry Content-Length: the stream stays open and
+    // the browser reads events until the connection closes. A Content-Length
+    // header would make EventSource treat the response as complete after the
+    // first bytes and drop all subsequent reload/css events.
     let headers = [
         ("Content-Type", "text/event-stream"),
         ("Cache-Control", "no-cache, no-transform"),
         ("Connection", "keep-alive"),
         ("Access-Control-Allow-Origin", "*"),
     ];
-    write_response(&mut stream, 200, "OK", &headers, b": connected\n\n", true).ok();
+    let mut response = String::from("HTTP/1.1 200 OK\r\n");
+    for (k, v) in &headers {
+        response.push_str(&format!("{}: {}\r\n", k, v));
+    }
+    response.push_str("\r\n: connected\n\n");
+    if stream
+        .write_all(response.as_bytes())
+        .and_then(|_| stream.flush())
+        .is_err()
+    {
+        return;
+    }
 
     let watch_dir = resolve_watch_dir(&target_path);
     if let Some(dir) = watch_dir {

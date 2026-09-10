@@ -172,6 +172,13 @@ fn sse_emits_reload_on_html_change() {
         "expected reload event, got: {}",
         received.lock().unwrap()
     );
+    // SSE must stream: a Content-Length header would make browsers close the
+    // EventSource after the first bytes and drop later events.
+    assert!(
+        !received.lock().unwrap().contains("Content-Length"),
+        "SSE response must not carry Content-Length, got: {}",
+        received.lock().unwrap()
+    );
 
     server.stop();
     let _ = fs::remove_dir_all(&base);
