@@ -1,3 +1,5 @@
+mod lsp;
+
 fn main() {
-    println!("hello");
+    lsp::run_lsp();
 }
