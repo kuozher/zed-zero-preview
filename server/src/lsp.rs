@@ -135,7 +135,11 @@ impl LspState {
         Value::Null
     }
 
-    fn open_preview(&self, file_uri: &str) {
+    fn open_preview(&mut self, file_uri: &str) {
+        if !self.client_mode && self.http_server.is_none() {
+            self.start_http_server();
+        }
+
         let is_windows = cfg!(windows);
         let file_path = paths::file_uri_to_path(file_uri, is_windows);
         let path_str = file_path.to_string_lossy().replace('\\', "/");
@@ -160,7 +164,9 @@ impl LspState {
 
     fn stop_preview(&mut self) {
         if self.client_mode {
-            let _ = http::http_get(http::DEFAULT_HOST, http::DEFAULT_PORT, "/__stop");
+            self.show_message(
+                "Zero Preview: preview server is shared with another Zed window; stop it from the window that started the server.",
+            );
         } else if let Some(server) = self.http_server.take() {
             server.stop();
         }

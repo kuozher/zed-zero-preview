@@ -199,6 +199,10 @@ mod tests {
         thread::sleep(Duration::from_millis(150));
         fs::write(&file, "v2").unwrap();
 
+        client
+            .set_read_timeout(Some(Duration::from_millis(100)))
+            .unwrap();
+
         let mut buf = [0u8; 1024];
         let mut received = String::new();
         let deadline = std::time::Instant::now() + Duration::from_secs(3);

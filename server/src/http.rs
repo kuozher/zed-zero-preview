@@ -500,10 +500,13 @@ fn serve_raw_path(
 }
 
 fn serve_directory_listing(stream: &mut TcpStream, dir_path: &Path) {
-    let entries = std::fs::read_dir(dir_path).unwrap_or_else(|_| {
-        write_response_text(stream, 500, "Internal Server Error", &[], "Read Error").ok();
-        return std::fs::read_dir(Path::new(".")).unwrap();
-    });
+    let entries = match std::fs::read_dir(dir_path) {
+        Ok(entries) => entries,
+        Err(_) => {
+            let _ = write_response_text(stream, 500, "Internal Server Error", &[], "Read Error");
+            return;
+        }
+    };
 
     let mut links = String::new();
     for entry in entries.flatten() {
