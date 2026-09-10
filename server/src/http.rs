@@ -10,6 +10,8 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::Duration;
 
+use socket2::{Domain, Socket, Type};
+
 pub const DEFAULT_HOST: &str = "127.0.0.1";
 pub const DEFAULT_PORT: u16 = 52331;
 
@@ -75,8 +77,7 @@ impl HttpServerHandle {
 }
 
 pub fn start_server(config: HttpConfig) -> std::io::Result<HttpServerHandle> {
-    let addr = format!("{}:{}", config.host, config.port);
-    let listener = TcpListener::bind(&addr)?;
+    let listener = bind_listener(&config.host, config.port)?;
     let port = listener.local_addr()?.port();
     let stop_flag = Arc::new(AtomicBool::new(false));
     let stop_flag_thread = stop_flag.clone();
@@ -116,7 +117,42 @@ pub fn start_server(config: HttpConfig) -> std::io::Result<HttpServerHandle> {
 }
 
 pub fn try_bind(port: u16) -> std::io::Result<TcpListener> {
-    TcpListener::bind(format!("{}:{}", DEFAULT_HOST, port))
+    bind_listener(DEFAULT_HOST, port)
+}
+
+fn bind_listener(host: &str, port: u16) -> std::io::Result<TcpListener> {
+    let addr = format!("{host}:{port}");
+    let addr = addr
+        .parse::<std::net::SocketAddr>()
+        .map_err(|err| std::io::Error::new(std::io::ErrorKind::InvalidInput, err))?;
+    let domain = if addr.is_ipv4() {
+        Domain::IPV4
+    } else {
+        Domain::IPV6
+    };
+    let socket = Socket::new(domain, Type::STREAM, None)?;
+    socket.set_reuse_address(true)?;
+    socket.bind(&addr.into())?;
+    socket.listen(128)?;
+    Ok(TcpListener::from(socket))
+}
+
+pub fn ping_server_with_retry(port: u16, attempts: u32, delay_ms: u64) -> bool {
+    for attempt in 0..attempts {
+        if ping_server(port) {
+            return true;
+        }
+        if attempt + 1 < attempts {
+            thread::sleep(Duration::from_millis(delay_ms));
+        }
+    }
+    false
+}
+
+pub fn is_addr_in_use(err: &std::io::Error) -> bool {
+    err.kind() == std::io::ErrorKind::AddrInUse
+        || err.raw_os_error() == Some(48)
+        || err.to_string().contains("Address already in use")
 }
 
 pub fn ping_server(port: u16) -> bool {

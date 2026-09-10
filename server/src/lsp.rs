@@ -56,13 +56,12 @@ impl LspState {
             Ok(handle) => {
                 self.http_server = Some(handle);
             }
-            Err(err) if err.kind() == std::io::ErrorKind::AddrInUse => {
-                if http::ping_server(http::DEFAULT_PORT) {
+            Err(err) if http::is_addr_in_use(&err) => {
+                if http::ping_server_with_retry(http::DEFAULT_PORT, 10, 50) {
                     self.client_mode = true;
                 } else {
-                    self.show_message(
-                        "Zero Preview: port 52331 is in use by another program. Stop it or close other Zed windows using preview.",
-                    );
+                    // Port is taken (often by another Zero Preview LSP). Try client mode on open.
+                    self.client_mode = true;
                 }
             }
             Err(err) => {
@@ -72,6 +71,14 @@ impl LspState {
                 ));
             }
         }
+    }
+
+    fn ensure_preview_server(&mut self) -> bool {
+        if self.http_server.is_some() || self.client_mode {
+            return true;
+        }
+        self.start_http_server();
+        self.http_server.is_some() || self.client_mode
     }
 
     pub fn handle_code_action(&self, params: &Value) -> Value {
@@ -126,8 +133,11 @@ impl LspState {
     }
 
     fn open_preview(&mut self, file_uri: &str) {
-        if !self.client_mode && self.http_server.is_none() {
-            self.start_http_server();
+        if !self.ensure_preview_server() {
+            self.show_message(
+                "Zero Preview: could not start preview server on port 52331. Quit other apps using that port, then try again.",
+            );
+            return;
         }
 
         let is_windows = cfg!(windows);
@@ -279,10 +289,6 @@ pub fn run_lsp() {
         }
 
         match method {
-            Some("initialized") => {
-                let mut guard = state.lock().unwrap();
-                guard.start_http_server();
-            }
             Some("exit") => std::process::exit(0),
             _ => {}
         }
