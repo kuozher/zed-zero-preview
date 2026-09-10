@@ -261,7 +261,9 @@ pub fn run_lsp() {
                                 "message": "method not found"
                             }
                         });
-                        if let Some(writer) = state.lock().unwrap().writer.lock().unwrap().as_mut() {
+                        // Reuse `guard`: locking `state` again here would
+                        // deadlock (std Mutex is not reentrant).
+                        if let Some(writer) = guard.writer.lock().unwrap().as_mut() {
                             write_message(writer, &err).ok();
                         }
                         continue;
