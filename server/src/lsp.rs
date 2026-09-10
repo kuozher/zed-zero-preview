@@ -45,39 +45,29 @@ impl LspState {
             return;
         }
 
-        match http::try_bind(http::DEFAULT_PORT) {
-            Ok(listener) => {
-                let _ = listener;
-                let config = HttpConfig {
-                    host: http::DEFAULT_HOST.to_string(),
-                    port: http::DEFAULT_PORT,
-                    stop_exits_process: true,
-                    browser: self.browser.clone(),
-                };
-                match http::start_server(config) {
-                    Ok(handle) => {
-                        self.http_server = Some(handle);
-                    }
-                    Err(err) => {
-                        self.show_message(&format!(
-                            "Zero Preview: failed to start HTTP server: {}",
-                            err
-                        ));
-                    }
-                }
+        let config = HttpConfig {
+            host: http::DEFAULT_HOST.to_string(),
+            port: http::DEFAULT_PORT,
+            stop_exits_process: true,
+            browser: self.browser.clone(),
+        };
+
+        match http::start_server(config) {
+            Ok(handle) => {
+                self.http_server = Some(handle);
             }
             Err(err) if err.kind() == std::io::ErrorKind::AddrInUse => {
                 if http::ping_server(http::DEFAULT_PORT) {
                     self.client_mode = true;
                 } else {
                     self.show_message(
-                        "Zero Preview: port 52331 is in use but server did not respond to ping",
+                        "Zero Preview: port 52331 is in use by another program. Stop it or close other Zed windows using preview.",
                     );
                 }
             }
             Err(err) => {
                 self.show_message(&format!(
-                    "Zero Preview: failed to bind HTTP server: {}",
+                    "Zero Preview: failed to start HTTP server: {}",
                     err
                 ));
             }
