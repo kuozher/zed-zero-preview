@@ -23,7 +23,7 @@
 
 It is **not** positioned as “a better live-server.” The point is **zero setup**, **highly flexible path compatibility** (spaces, `#`, `%`, Chinese paths, deep folders), **single-file instant preview**, and **no editing interference**.
 
-| If you care about | Typical dev server / `live-server` | Zero Preview |
+| Differences | Typical dev server / `live-server` | Zero Preview |
 | :--- | :--- | :--- |
 | Setup | Start a server by hand, pick a root | Open HTML → code action |
 | URL model | Workspace root + websocket | `/raw/` absolute-path addressing + SSE |
@@ -218,7 +218,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 定位**不是**「更好的 live-server」，而是 **零設定**、**高彈性路徑相容**（空格、`#`、`%`、中文路徑、深層目錄）、**單檔即開**、**不干擾編輯**。
 
-| 適用對象 | 一般 dev server / `live-server` | Zero Preview |
+| 差異比較 | 一般 dev server / `live-server` | Zero Preview |
 | :--- | :--- | :--- |
 | 設定 | 手動起 server、指定根目錄 | 開 HTML → code action |
 | URL 模型 | workspace 根目錄 + websocket | `/raw/` 絕對路徑定址 + SSE |

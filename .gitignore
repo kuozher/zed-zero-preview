@@ -1,2 +1,4 @@
 target/
 .cargo/config.toml
+extension.wasm
+.DS_Store
