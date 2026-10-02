@@ -14,14 +14,20 @@ impl BrowserOpener for DefaultBrowser {
 }
 
 pub fn open_browser(url: &str) {
-    if cfg!(windows) {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
         Command::new("cmd.exe")
-            .args(["/c", &format!("start \"\" \"{}\"", url)])
+            .raw_arg(format!("/c start \"\" \"{}\"", url))
             .spawn()
             .ok();
-    } else if cfg!(target_os = "macos") {
+    }
+    #[cfg(target_os = "macos")]
+    {
         Command::new("open").arg(url).spawn().ok();
-    } else {
+    }
+    #[cfg(all(not(windows), not(target_os = "macos")))]
+    {
         Command::new("xdg-open").arg(url).spawn().ok();
     }
 }
