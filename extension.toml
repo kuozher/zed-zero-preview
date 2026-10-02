@@ -1,6 +1,6 @@
 id = "zero-live-preview"
 name = "Zero Preview"
-version = "0.1.0"
+version = "0.1.1"
 schema_version = 1
 authors = ["kuozher"]
 description = "Zero-config, path-resilient live preview for HTML. Single-file instant preview with SSE reload and hot CSS."

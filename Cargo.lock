@@ -1079,7 +1079,7 @@ dependencies = [
 
 [[package]]
 name = "zero-preview-server"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "notify",
  "serde",
@@ -1089,7 +1089,7 @@ dependencies = [
 
 [[package]]
 name = "zero_live_preview"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "zed_extension_api",
 ]
