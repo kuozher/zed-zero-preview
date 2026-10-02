@@ -48,34 +48,63 @@ It is **not** positioned as “a better live-server.” The point is **zero setu
 
 ## 🚀 Install
 
-1. Open **Zed → Extensions** (`Cmd/Ctrl + Shift + X`).
-2. Search for **"Zero Preview"**.
-3. Install the extension.
+> [!NOTE]
+> **Extension Registry Status**: Official listing on the Zed Extensions store is currently under review.
+> In the meantime, please install via **Dev Extension** below (fully supported on macOS, Windows, and Linux).
 
-The first time you use it on an HTML file, Zed downloads the platform binary from [GitHub Releases](https://github.com/kuozher/zed-zero-preview/releases).
+### Install via Dev Extension (Recommended)
 
-### Dev install (contributors)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/kuozher/zed-zero-preview.git
+   cd zed-zero-preview
+   ```
 
-```bash
-git clone https://github.com/kuozher/zed-zero-preview.git
-cd zed-zero-preview
-```
+2. In Zed, open Command Palette (**`Cmd/Ctrl + Shift + P`**) and run:
+   **`zed: install dev extension`** → Select this repository folder.
 
-In Zed: **Extensions → Install Dev Extension** → select the repo directory.
+> [!TIP]
+> That's it! Zed compiles the extension into WebAssembly and automatically downloads the matching platform server binary from [GitHub Releases](https://github.com/kuozher/zed-zero-preview/releases).
+> **You do NOT need to configure `settings.json` for standard use.**
 
-Optional local override (`settings.json`):
+---
 
-```json
-{
-  "lsp": {
-    "zero-preview": {
-      "binary": {
-        "path": "/absolute/path/to/target/release/zero-preview-server"
-      }
-    }
-  }
-}
-```
+### (Optional) Local Server Override (Contributors)
+
+If you are modifying the server backend source code under `server/`:
+
+1. Build the release binary:
+   ```bash
+   cargo build --release -p zero-preview-server
+   ```
+
+2. In Zed's `settings.json`, set the path to your compiled binary:
+
+   **macOS / Linux:**
+   ```json
+   {
+     "lsp": {
+       "zero-preview": {
+         "binary": {
+           "path": "/absolute/path/to/zed-zero-preview/target/release/zero-preview-server"
+         }
+       }
+     }
+   }
+   ```
+
+   **Windows:** *(Use forward slashes `/` and include `.exe`)*
+   ```json
+   {
+     "lsp": {
+       "zero-preview": {
+         "binary": {
+           "path": "C:/path/to/zed-zero-preview/target/release/zero-preview-server.exe"
+         }
+       }
+     }
+   }
+   ```
 
 ---
 
@@ -131,7 +160,11 @@ Open with **Command Palette → `zed: open tasks`** and add:
 Manual test (replace with your absolute path):
 
 ```bash
+# macOS / Linux
 curl -Gsf "http://127.0.0.1:52331/__open" --data-urlencode "file=/Users/you/project/index.html"
+
+# Windows (Command Prompt / PowerShell)
+curl.exe -Gsf "http://127.0.0.1:52331/__open" --data-urlencode "file=C:/path/to/project/index.html"
 ```
 
 ### Step 2 — `keymap.json`
@@ -243,34 +276,63 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 🚀 安裝
 
-1. 開啟 **Zed → Extensions**（`Cmd/Ctrl + Shift + X`）。
-2. 搜尋 **「Zero Preview」**。
-3. 安裝擴充功能。
+> [!NOTE]
+> **官方市集狀態**：目前已提交至 Zed 官方 Extension 審核中。
+> 在正式上架前，請透過下方的 **開發者模式（Dev Extension）** 安裝（macOS、Windows 與 Linux 皆已完整測試支援）。
 
-首次在 HTML 檔上使用時，Zed 會從 [GitHub Releases](https://github.com/kuozher/zed-zero-preview/releases) 下載平台 binary。
+### 透過開發者模式安裝（目前建議方式）
 
-### 開發版安裝（貢獻者）
+1. Clone 專案倉庫：
+   ```bash
+   git clone https://github.com/kuozher/zed-zero-preview.git
+   cd zed-zero-preview
+   ```
 
-```bash
-git clone https://github.com/kuozher/zed-zero-preview.git
-cd zed-zero-preview
-```
+2. 在 Zed 中開啟命令面板（**`Cmd/Ctrl + Shift + P`**）並執行：
+   **`zed: install dev extension`** → 選取此專案資料夾。
 
-在 Zed：**Extensions → Install Dev Extension** → 選取 repo 目錄。
+> [!TIP]
+> 完成！Zed 會自動將 Extension 編譯為 WebAssembly，並在首次預覽時自動從 [GitHub Releases](https://github.com/kuozher/zed-zero-preview/releases) 下載對應平台的背景伺服器執行檔。
+> **一般正常使用不需要修改 `settings.json`。**
 
-可選的本機覆寫（`settings.json`）：
+---
 
-```json
-{
-  "lsp": {
-    "zero-preview": {
-      "binary": {
-        "path": "/絕對路徑/target/release/zero-preview-server"
-      }
-    }
-  }
-}
-```
+### （可選）本機編譯伺服器覆寫（貢獻者）
+
+若您正在修改 `server/` 底下的後端伺服器原始碼：
+
+1. 編譯 Release 執行檔：
+   ```bash
+   cargo build --release -p zero-preview-server
+   ```
+
+2. 在 Zed 的 `settings.json` 中指向編譯出的執行檔：
+
+   **macOS / Linux：**
+   ```json
+   {
+     "lsp": {
+       "zero-preview": {
+         "binary": {
+           "path": "/絕對路徑/zed-zero-preview/target/release/zero-preview-server"
+         }
+       }
+     }
+   }
+   ```
+
+   **Windows：** *（請使用正斜線 `/` 並包含 `.exe` 副檔名）*
+   ```json
+   {
+     "lsp": {
+       "zero-preview": {
+         "binary": {
+           "path": "C:/絕對路徑/zed-zero-preview/target/release/zero-preview-server.exe"
+         }
+       }
+     }
+   }
+   ```
 
 ---
 
@@ -326,7 +388,11 @@ cd zed-zero-preview
 手動測試（請換成你的絕對路徑）：
 
 ```bash
+# macOS / Linux
 curl -Gsf "http://127.0.0.1:52331/__open" --data-urlencode "file=/Users/you/project/index.html"
+
+# Windows (Command Prompt / PowerShell)
+curl.exe -Gsf "http://127.0.0.1:52331/__open" --data-urlencode "file=C:/path/to/project/index.html"
 ```
 
 ### 步驟 2 — `keymap.json`
